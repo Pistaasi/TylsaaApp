@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'; 
 import { StyleSheet, Text, View, Button, Alert, TextInput, Image, ScrollView, ImageBackground, Linking} from 'react-native';
-import { Card, ListItem, Icon } from 'react-native-elements'
+import { Card, ListItem, Icon, CheckBox} from 'react-native-elements'
 import { Ionicons} from '@expo/vector-icons';  
 import { Picker, selectedValue } from '@react-native-picker/picker';
 import * as SQLite from'expo-sqlite';
@@ -27,7 +27,8 @@ export default function Homepage({ navigation }) {
     //parametrit
     const [type, setType] = useState('');
     const [participants, setParticipants] = useState('');
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(false);
+    const [cash, setCash] = useState("");
     const [acc, setAcc] = useState('');
     const [laskut, setLaskut] = useState([]); 
 
@@ -78,7 +79,14 @@ export default function Homepage({ navigation }) {
     }
 
     const getActivity = () => {
-          fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${price}&accessibility=${acc}`)  
+
+          if (price === true) {
+              setCash("0"); 
+          } else {
+              setCash(""); 
+          }
+
+          fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}&accessibility=${acc}`)  
           .then(response => response.json())  
           .then(data => setActivity(data))  
           .catch(error => {         
@@ -90,23 +98,13 @@ export default function Homepage({ navigation }) {
     return (
       <View style={styles.container}>
 
-        <View style={{backgroundColor: "red"}}> 
+        <View style={{flex: 1}}> 
 
         <Text>Parameters: </Text>
 
-        <ListItem>
-        <ListItem.Content>
-        <ListItem.Title>TYPE</ListItem.Title>
-        <ListItem.Input>
-        </ListItem.Input>
-        </ListItem.Content>
-        </ListItem>
-
-        </View>
-
         <Picker
         selectedValue={type}
-        style={{ height: 50, width: 150, backgroundColor: "yellow", borderRadius: 10, borderWidth: 0}}
+        style={{ height: 50, width: 250, backgroundColor: "yellow", borderRadius: 10, borderWidth: 0}}
         onValueChange={(itemValue, itemIndex) => setType(itemValue)}>
 
         <Picker.Item label="recreational" value="recreational" />
@@ -120,9 +118,34 @@ export default function Homepage({ navigation }) {
         <Picker.Item label="music" value="music" />
         <Picker.Item label="reset" value="" />
         </Picker>
-        
 
-          
+        <Picker
+        selectedValue={participants}
+        style={{ height: 50, width: 250, backgroundColor: "green", borderRadius: 10, borderWidth: 0}}
+        onValueChange={(itemValue, itemIndex) => setParticipants(itemValue)}>
+
+        <Picker.Item label="1" value="1" />
+        <Picker.Item label="2" value="2" />
+        <Picker.Item label="3" value="3" />
+        <Picker.Item label="4" value="4" />
+        <Picker.Item label="5" value="5" />
+        <Picker.Item label="8" value="8" />
+        <Picker.Item label="reset" value="" />
+        </Picker>
+
+        <CheckBox
+            center
+            title="Free?"
+            checkedIcon="dot-circle-o"
+            uncheckedIcon="circle-o"
+            checked={price}
+            onPress={() => setPrice(!price)}
+            />
+
+        </View>
+
+
+          <View style={{backgroundColor: "#FDAF75", flex: 2, width: 415}}>
           <Card containerStyle={{width:350}}>
               <Card.Title>{activity.activity}</Card.Title>
               <Card.Divider />
@@ -147,6 +170,8 @@ export default function Homepage({ navigation }) {
 
             </View>
           </Card>
+
+          </View>
       
         <StatusBar style="auto" />
       </View>
@@ -159,5 +184,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#333C83'
   },
 });
