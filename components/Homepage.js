@@ -145,15 +145,16 @@ export default function Homepage({ navigation }) {
         </View>
 
 
-          <View style={{backgroundColor: "#FDAF75", flex: 2, width: 415}}>
-          <Card containerStyle={{width:350}}>
-              <Card.Title>{activity.activity}</Card.Title>
+          <View style={{backgroundColor: "#FDAF75", flex: 2, width: 415, padding: 20}}>
+          <Card containerStyle={{width:350, backgroundColor: "#333C83"}}
+          wrapperStyle={{backgroundColor: "#333C83"}}>
+              <Card.Title style={{color: "#F24A72"}}>{activity.activity}</Card.Title>
               <Card.Divider />
 
-              <Text>Type: {activity.type}</Text>
-              <Text>Participants: {activity.participants}</Text>
-              <Text>Price: {activity.price}</Text>
-              <Text style={{color: 'blue'}}
+              <Text style={{color: "#EAEA7F"}}>Type: {activity.type}</Text>
+              <Text style={{color: "#EAEA7F"}}>Participants: {activity.participants}</Text>
+              <Text style={{color: "#EAEA7F"}}>Price: {activity.price}</Text>
+              <Text style={{color: "#FDAF75"}}
       onPress={() => Linking.openURL(activity.link)}>{activity.link}</Text> 
 
               
@@ -170,6 +171,8 @@ export default function Homepage({ navigation }) {
 
             </View>
           </Card>
+
+          <Text style={{fontWeight: "bold", fontSize: 37, padding: 20, color: "#333C83"}}>          DONE!</Text>
 
           </View>
       
