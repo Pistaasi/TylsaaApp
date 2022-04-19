@@ -1,18 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'; 
-import { StyleSheet, Text, View, Button, Alert, TextInput, Image, ScrollView, ImageBackground, Linking} from 'react-native';
-import { Card, ListItem, Icon, CheckBox} from 'react-native-elements'
+import { StyleSheet, Text, View, Alert, TextInput, Image, ScrollView, ImageBackground, Linking} from 'react-native';
+import { Card, ListItem, Icon, CheckBox, Button} from 'react-native-elements'
 import { Ionicons} from '@expo/vector-icons';  
 import { Picker, selectedValue } from '@react-native-picker/picker';
 import * as SQLite from'expo-sqlite';
+import { FlatList } from 'react-native';
+import { NavigationContainer} from '@react-navigation/native';
+import { createNativeStackNavigator } from'@react-navigation/native-stack';
+import TouchableScale from 'react-native-touchable-scale';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 export default function Homepage({ navigation }) {
   // background img? 
   // current task, find new task, level etc. 
+  // dailies
   // stack nav to "favorites"
   // dailies on top of page, disappear when done from flatlist
-  // bottom nav to "points" page, show points and reward options
-  // swipable component for buying rewards? 
   // text fade in would be cool with jokes etc with react-spring native
 
   // save blacklisted tasks and faves in sqlite local db
@@ -31,6 +35,7 @@ export default function Homepage({ navigation }) {
     const [cash, setCash] = useState("");
     const [acc, setAcc] = useState('');
     const [laskut, setLaskut] = useState([]); 
+    const [points, setPoints] =useState(0); 
 
     const [activity, setActivity] = useState({
         "activity": "Find a new activity!",
@@ -46,16 +51,20 @@ export default function Homepage({ navigation }) {
 
     //create list
     useEffect(() => {
+        updateList();
         getActivity(); 
         db.transaction(tx => {
-            tx.executeSql("create table if not exists fave (id integer primary key not null unique, type text, participants int, price double, link text);");
+            tx.executeSql("create table if not exists faves (id integer primary key not null unique, activity text, type text, participants int, price double, link text);");
+            tx.executeSql("create table if not exists points (id integer primary key not null unique, userPoints int);");
+            tx.executeSql("create table if not exists blacklist (id integer primary key not null unique, bannedId text);");
             }, null, updateList);
+            console.log(laskut); 
       }, [])
 
        // update list
     const updateList = () => {
         db.transaction(tx => {
-              tx.executeSql('select * from fave;', [], (_, { rows }) =>
+              tx.executeSql('select * from faves;', [], (_, { rows }) =>
                   setLaskut(rows._array)
                   );   
               }, null, null);
@@ -65,7 +74,7 @@ export default function Homepage({ navigation }) {
     const deleteFave = (id) => {
         db.transaction(
             tx => {
-            tx.executeSql(`delete from fave where id = ?;`, [id]);
+            tx.executeSql(`delete from faves where id = ?;`, [id]);
             }, null, updateList
         )    
     }
@@ -73,11 +82,35 @@ export default function Homepage({ navigation }) {
     // Favorite
     const saveFave = () => {
         db.transaction(tx => {
-              tx.executeSql('insert into fave (type, participants, price, link) values (?, ?, ?, ?);',  
-              [activity.type, activity.participants, activity.price, activity.link]);    
+              tx.executeSql('insert into faves (activity, type, participants, price, link) values (?, ?, ?, ?, ?);',  
+              [activity.activity, activity.type, activity.participants, activity.price, activity.link]);    
           }, null, updateList)
+          console.log(laskut);
     }
 
+    // add points
+    const addPoints = () => {
+      let pointsDB = points + 10; 
+      db.transaction(tx => {
+            tx.executeSql('UPDATE points SET userPoints = (?) WHERE id = (1)',  
+            [pointsDB]);    
+        }, null, setPoints(pointsDB))
+        console.log(points);
+        getActivity();
+  }
+
+  // update points
+  const updatePoints = () => {
+    db.transaction(tx => {
+          tx.executeSql('select * from points;',[], (_, { rows }) =>
+              setPoints(rows._array[0].userPoints)
+              );   
+          }, null, null);
+          console.log(points);
+      }
+
+
+    // get activity
     const getActivity = () => {
 
           if (price === true) {
@@ -146,6 +179,64 @@ export default function Homepage({ navigation }) {
 
 
           <View style={{backgroundColor: "#FDAF75", flex: 2, width: 415, padding: 20}}>
+
+            <Text>{points}</Text>
+          <View style={{flexDirection: "row"}}>
+          <Button
+               TouchableComponent={TouchableScale}
+               friction={90} 
+               tension={100}
+               activeScale={0.95}
+              title="FAVORITES"
+              titleStyle={{ fontWeight: 'bold', fontSize: 14}}
+              buttonStyle={{
+                borderWidth: 0,
+                borderColor: 'transparent',
+                borderRadius: 20,
+                backgroundColor: "rgba(242, 74, 114, 1)"
+                
+              }}
+              containerStyle={{
+                width: 150,
+                marginHorizontal: 20,
+                marginVertical: 10,
+              }}
+              icon={{
+                name: 'heart',
+                type: 'font-awesome',
+                size: 15,
+                color: 'white',
+              }}
+              iconRight
+              iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
+              onPress={() => navigation.navigate('Favorites')}
+            />
+
+              <Button
+               TouchableComponent={TouchableScale}
+               friction={90} 
+               tension={100}
+               activeScale={0.95}
+              title="DONE   🎉"
+              titleStyle={{ fontWeight: 'bold', fontSize: 14}}
+              buttonStyle={{
+                borderWidth: 0,
+                borderColor: 'transparent',
+                borderRadius: 20,
+                backgroundColor: "rgba(242, 74, 114, 1)"
+                
+              }}
+              containerStyle={{
+                width: 110,
+                marginHorizontal: 20,
+                marginVertical: 10,
+              }}
+              iconRight
+              iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
+              onPress={addPoints}
+            />
+            </View>
+
           <Card containerStyle={{width:350, backgroundColor: "#333C83"}}
           wrapperStyle={{backgroundColor: "#333C83"}}>
               <Card.Title style={{color: "#F24A72"}}>{activity.activity}</Card.Title>
@@ -162,7 +253,7 @@ export default function Homepage({ navigation }) {
             <View style={{paddingTop: 20}}>
 
             <View style={{flexDirection: "row"}}>
-            <Ionicons name="heart" size={30} color="red" />
+            <Ionicons name="heart" size={30} color="red" onPress= {saveFave}/>
             <Text>                              </Text>
             <Ionicons name="refresh" size={30} color="green" onPress= {getActivity}/>
             <Text>                               </Text>
@@ -172,8 +263,23 @@ export default function Homepage({ navigation }) {
             </View>
           </Card>
 
-          <Text style={{fontWeight: "bold", fontSize: 37, padding: 20, color: "#333C83"}}>          DONE!</Text>
+          <Text> </Text>
 
+          <FlatList 
+        keyExtractor={item => item.id.toString()} 
+        renderItem={({item}) => 
+        <View style={{width: 400}}>
+        <ListItem>
+          <ListItem.Content>
+            <ListItem.Title>{item.id}</ListItem.Title>
+            <ListItem.Subtitle>{item.activity}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.type}</ListItem.Subtitle>
+            </ListItem.Content>
+            <Icon type="material" reverse color="red" name="delete" onPress={() => deleteFave(item.id)} />
+          </ListItem>
+        </View>} 
+          data={laskut} 
+      />  
           </View>
       
         <StatusBar style="auto" />

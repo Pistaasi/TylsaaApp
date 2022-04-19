@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Homepage from './components/Homepage';
 import Points from "./components/Points";
 import TabsNav from "./components/TabsNav";
+import Favorites from "./components/Favorites";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={TabsNav}/>
         <Stack.Screen name="Points" component={Points}/>
+        <Stack.Screen name="Favorites" component={Favorites}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
