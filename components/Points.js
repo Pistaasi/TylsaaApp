@@ -10,6 +10,32 @@ import {LinearGradient} from 'expo-linear-gradient';
 
 export default function Points (){
 
+    const db = SQLite.openDatabase('Address.db');
+
+    const [points, setPoints] = useState(0); 
+
+    useEffect(() => {
+       updatePoints();
+      }, [])
+
+    // - points
+    const minusPoints = () => {
+      db.transaction(tx => {
+            tx.executeSql('UPDATE points SET userPoints = userPoints - 10 WHERE id = (1)',  
+            );    
+        }, null, updatePoints)
+  }
+
+  // update points
+  const updatePoints = () => {
+    db.transaction(tx => {
+          tx.executeSql('select * from points;',[], (_, { rows }) =>
+              setPoints(rows._array[0].userPoints)
+              );   
+          }, null, null);
+          console.log(points);
+      }
+
     const [cat, setCat] = useState({
         "fact": ""
         });
@@ -25,6 +51,8 @@ export default function Points (){
             Alert.alert('Error', error);   
           });
           console.log(cat);
+          minusPoints();
+          updatePoints();
           setJoke({
             "type": ""
             });
@@ -38,6 +66,8 @@ export default function Points (){
             Alert.alert('Error', error);   
           });
           console.log(joke);
+          minusPoints();
+          updatePoints();
           setCat({
             "fact": ""
             });
@@ -46,7 +76,7 @@ export default function Points (){
     return (
         <View style={styles.container}>
             <Text 
-            style={{fontWeight: "bold", fontSize: 20, color: "#FDAF75"}}>                                                        10 points</Text>
+            style={{fontWeight: "bold", fontSize: 20, color: "#FDAF75"}} onPress={() => updatePoints()}>                                                        {points} points</Text>
 
            <View style={{flex: 1}}>
                <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#FDAF75"}}>
@@ -109,8 +139,7 @@ export default function Points (){
               iconRight
               iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
               onPress= {getJoke}
-            />
-            
+            />   
                
            </View> 
 

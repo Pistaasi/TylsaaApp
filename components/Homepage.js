@@ -12,21 +12,18 @@ import TouchableScale from 'react-native-touchable-scale';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 export default function Homepage({ navigation }) {
-  // background img? 
-  // current task, find new task, level etc. 
+  // get points to work AAAAAAAAAAAAAAA
   // dailies
-  // stack nav to "favorites"
-  // dailies on top of page, disappear when done from flatlist
-  // text fade in would be cool with jokes etc with react-spring native
+  // dailies disappear when done from flatlist
 
-  // save blacklisted tasks and faves in sqlite local db
+  // save blacklisted tasks in db
   // when fetching task, check if id matches blacklisted task
-  // if does --> redo fetch 
-  // if id matches faves 1. heart icon = favorited
-  // animation? 
+  // if id matches faves heart icon = grey instead of red?
 
-  // tap on daily task = open popup view 
-  // simpler than normal view
+  // the "mayhaps" shit
+  // animation? 
+  // tap on daily task = open popup view (FUCK NO / maybe?)
+   // text fade in would be cool with jokes etc with react-spring native
 
     //parametrit
     const [type, setType] = useState('');
@@ -36,7 +33,7 @@ export default function Homepage({ navigation }) {
     const [acc, setAcc] = useState('');
     const [laskut, setLaskut] = useState([]); 
     const [points, setPoints] =useState(0); 
-
+    const [banned, setBanned] = useState([]);
     const [activity, setActivity] = useState({
         "activity": "Find a new activity!",
         "type": "",
@@ -47,10 +44,13 @@ export default function Homepage({ navigation }) {
         "accessibility": null
         });
 
+    // open db
     const db = SQLite.openDatabase('Address.db');
 
-    //create list
+    //create tables
     useEffect(() => {
+      // dumb solution
+    console.log(laskut);
         updateList();
         getActivity(); 
         db.transaction(tx => {
@@ -58,10 +58,9 @@ export default function Homepage({ navigation }) {
             tx.executeSql("create table if not exists points (id integer primary key not null unique, userPoints int);");
             tx.executeSql("create table if not exists blacklist (id integer primary key not null unique, bannedId text);");
             }, null, updateList);
-            console.log(laskut); 
       }, [])
 
-       // update list
+       // update list (faves list)
     const updateList = () => {
         db.transaction(tx => {
               tx.executeSql('select * from faves;', [], (_, { rows }) =>
@@ -88,31 +87,52 @@ export default function Homepage({ navigation }) {
           console.log(laskut);
     }
 
+    // POINTS
+
     // add points
     const addPoints = () => {
-      let pointsDB = points + 10; 
       db.transaction(tx => {
-            tx.executeSql('UPDATE points SET userPoints = (?) WHERE id = (1)',  
-            [pointsDB]);    
-        }, null, setPoints(pointsDB))
-        console.log(points);
+            tx.executeSql('UPDATE points SET userPoints = userPoints + 10 WHERE id = (1)',  
+            );    
+        }, null, null)
         getActivity();
+        updatePoints();
+      // add points = pressing done button
   }
 
   // update points
   const updatePoints = () => {
     db.transaction(tx => {
-          tx.executeSql('select * from points;',[], (_, { rows }) =>
+          tx.executeSql('select * from points;', [], (_, { rows }) =>
               setPoints(rows._array[0].userPoints)
               );   
-          }, null, null);
-          console.log(points);
+          }, console.log(points), null);
       }
+
+
+    // BLACKLISTING
+
+    const saveBlacklist = () => {
+      db.transaction(tx => {
+            tx.executeSql('insert into blacklist (bannedId) values (?);',  
+            [activity.key]);    
+        }, null, updateList)
+  }
+
+    const updateBlacklist = () => {
+    db.transaction(tx => {
+          tx.executeSql('select * from blacklist;', [], (_, { rows }) =>
+              setBanned(rows._array)
+              );   
+          }, console.log(banned), null);
+      }
+
 
 
     // get activity
     const getActivity = () => {
 
+        // set price parameter from checker boolean
           if (price === true) {
               setCash("0"); 
           } else {
@@ -121,7 +141,7 @@ export default function Homepage({ navigation }) {
 
           fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}&accessibility=${acc}`)  
           .then(response => response.json())  
-          .then(data => setActivity(data))  
+          .then(data => setActivity(data)) 
           .catch(error => {         
               Alert.alert('Error', error);   
             });
@@ -235,7 +255,10 @@ export default function Homepage({ navigation }) {
               iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
               onPress={addPoints}
             />
+
             </View>
+
+            <Button title="pog" onPress={updateBlacklist}></Button>
 
           <Card containerStyle={{width:350, backgroundColor: "#333C83"}}
           wrapperStyle={{backgroundColor: "#333C83"}}>
@@ -257,7 +280,7 @@ export default function Homepage({ navigation }) {
             <Text>                              </Text>
             <Ionicons name="refresh" size={30} color="green" onPress= {getActivity}/>
             <Text>                               </Text>
-            <Ionicons name="trash" size={30} color="grey" />
+            <Ionicons name="trash" size={30} color="grey" onPress = {saveBlacklist}/>
             </View>
 
             </View>
