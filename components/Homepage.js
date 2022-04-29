@@ -1,31 +1,37 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'; 
-import { StyleSheet, Text, View, Alert, TextInput, Image, ScrollView, ImageBackground, Linking} from 'react-native';
+import { StyleSheet, Text, View, Alert, Image, ScrollView, ImageBackground, Linking} from 'react-native';
 import { Card, ListItem, Icon, CheckBox, Button} from 'react-native-elements'
 import { Ionicons} from '@expo/vector-icons';  
 import { Picker, selectedValue } from '@react-native-picker/picker';
 import * as SQLite from'expo-sqlite';
 import { FlatList } from 'react-native';
-import { NavigationContainer} from '@react-navigation/native';
-import { createNativeStackNavigator } from'@react-navigation/native-stack';
 import TouchableScale from 'react-native-touchable-scale';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { animated } from "react-spring";
+import glow from "@pistaasi/react-native-glow";
+
+const AnimatedIcon = animated(Ionicons); 
 
 export default function Homepage({ navigation }) {
-  // get points to work AAAAAAAAAAAAAAA
-  // dailies
-  // dailies disappear when done from flatlist
+// IMPORTANTÈ
 
-  // save blacklisted tasks in db
-  // when fetching task, check if id matches blacklisted task
-  // if id matches faves heart icon = grey instead of red?
+    // styling
 
-  // the "mayhaps" shit
-  // animation? 
-  // tap on daily task = open popup view (FUCK NO / maybe?)
-   // text fade in would be cool with jokes etc with react-spring native
+    // when fetching task, check if id matches blacklisted task
+    // if id matches faves heart icon = glowing fuck yea
+
+// optimization shit
+    // points update without button press
+    // global variable? 
+    // react context? 
+
+// the "mayhaps" shit
+    // animation? 
+    // text fade in would be cool with jokes etc with react-spring native
 
     //parametrit
+    const [dailies, setDailies] = useState([]);
+    const [currDate, setCurrDate] = useState(new Date().getDate());
     const [type, setType] = useState('');
     const [participants, setParticipants] = useState('');
     const [price, setPrice] = useState(false);
@@ -47,20 +53,33 @@ export default function Homepage({ navigation }) {
     // open db
     const db = SQLite.openDatabase('Address.db');
 
-    //create tables
+    // create tables
     useEffect(() => {
-      // dumb solution
-    console.log(laskut);
         updateList();
         getActivity(); 
         db.transaction(tx => {
             tx.executeSql("create table if not exists faves (id integer primary key not null unique, activity text, type text, participants int, price double, link text);");
+            tx.executeSql("create table if not exists dailies (id integer primary key not null unique, activity text, type text, link text);");
             tx.executeSql("create table if not exists points (id integer primary key not null unique, userPoints int);");
             tx.executeSql("create table if not exists blacklist (id integer primary key not null unique, bannedId text);");
             }, null, updateList);
       }, [])
 
-       // update list (faves list)
+      // dailies
+      useEffect(() => {
+        getDailies(); 
+
+        // Points needs id=1 points to keep count 
+        // If id=1 exists, this sql adds nothing
+        db.transaction(tx => {
+         tx.executeSql("INSERT IGNORE INTO points (id, userPoints) VALUES (1, 10);");
+          }, null, updateList);
+        console.log(dailies);
+      }, [])
+
+    // FAVORITES
+
+    // update list (faves list)
     const updateList = () => {
         db.transaction(tx => {
               tx.executeSql('select * from faves;', [], (_, { rows }) =>
@@ -99,6 +118,20 @@ export default function Homepage({ navigation }) {
         updatePoints();
       // add points = pressing done button
   }
+
+  // add points dailies
+  const addPointsDailies = (delKey) => {
+    db.transaction(tx => {
+          tx.executeSql('UPDATE points SET userPoints = userPoints + 20 WHERE id = (1)');
+          //tx.executeSql(`delete from dailies where id = ?;`, [id]);    
+      }, null, null)
+      getDailies();
+      updatePoints();
+      dailiesDel = dailies.filter(function(item) {
+        return item.key != delKey;
+    });
+      setDailies(dailiesDel);
+}
 
   // update points
   const updatePoints = () => {
@@ -146,7 +179,43 @@ export default function Homepage({ navigation }) {
               Alert.alert('Error', error);   
             });
             console.log(activity);
+            //oh well
+            let i = 0;
+            while (i < banned) {
+              if (activity.key == banned[i].bannedId) {
+                getActivity();
+                break; 
+              }
+              i++;
+            }
         }
+
+    // get dailies
+    const getDailies = () => {
+
+      let i = 0; 
+      if (dailies.length == 3) {
+        
+      } else if (dailies.length < 1 && new Date().getDate() != currDate){
+        
+        setCurrDate(new Date().getDate());
+
+        while (i < 3) {
+            fetch(`https://www.boredapi.com/api/activity`)  
+                  .then(response => response.json())  
+                  .then(data => dailies.push(data)) 
+                  .catch(error => {         
+                      Alert.alert('Error', error);   
+                    });
+        i++;
+      }
+
+      } else if (dailies.length > 3) {
+        setDailies([]); 
+      }
+      }
+
+    let glowSettings = glow(1, 20, "grey", "red", false); 
 
     return (
       <View style={styles.container}>
@@ -174,7 +243,7 @@ export default function Homepage({ navigation }) {
 
         <Picker
         selectedValue={participants}
-        style={{ height: 50, width: 250, backgroundColor: "green", borderRadius: 10, borderWidth: 0}}
+        style={{ height: 50, width: 250, backgroundColor: "#F24A72", color: "white"}}
         onValueChange={(itemValue, itemIndex) => setParticipants(itemValue)}>
 
         <Picker.Item label="1" value="1" />
@@ -258,8 +327,6 @@ export default function Homepage({ navigation }) {
 
             </View>
 
-            <Button title="pog" onPress={updateBlacklist}></Button>
-
           <Card containerStyle={{width:350, backgroundColor: "#333C83"}}
           wrapperStyle={{backgroundColor: "#333C83"}}>
               <Card.Title style={{color: "#F24A72"}}>{activity.activity}</Card.Title>
@@ -280,7 +347,7 @@ export default function Homepage({ navigation }) {
             <Text>                              </Text>
             <Ionicons name="refresh" size={30} color="green" onPress= {getActivity}/>
             <Text>                               </Text>
-            <Ionicons name="trash" size={30} color="grey" onPress = {saveBlacklist}/>
+            <AnimatedIcon name="trash" size={30} color="grey" onPress= {saveBlacklist}/>
             </View>
 
             </View>
@@ -289,19 +356,19 @@ export default function Homepage({ navigation }) {
           <Text> </Text>
 
           <FlatList 
-        keyExtractor={item => item.id.toString()} 
+        keyExtractor={item => item.key.toString()} 
         renderItem={({item}) => 
-        <View style={{width: 400}}>
+        <View style={{width: 380}}>
         <ListItem>
           <ListItem.Content>
-            <ListItem.Title>{item.id}</ListItem.Title>
-            <ListItem.Subtitle>{item.activity}</ListItem.Subtitle>
+            <ListItem.Title>{item.activity}</ListItem.Title>
             <ListItem.Subtitle>{item.type}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.link}</ListItem.Subtitle>
             </ListItem.Content>
-            <Icon type="material" reverse color="red" name="delete" onPress={() => deleteFave(item.id)} />
+            <Icon type="material" color="green" name="done" onPress={() => addPointsDailies(item.key)} />
           </ListItem>
         </View>} 
-          data={laskut} 
+          data={dailies} 
       />  
           </View>
       

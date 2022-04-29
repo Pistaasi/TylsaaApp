@@ -59,7 +59,7 @@ export default function Points (){
       }
 
       const getJoke = () => {
-        fetch(`https://v2.jokeapi.dev/joke/any`)  
+        fetch(`https://v2.jokeapi.dev/joke/any?safe-mode`)  
         .then(response => response.json())  
         .then(data => setJoke(data))  
         .catch(error => {         
