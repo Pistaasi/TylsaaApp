@@ -17,8 +17,10 @@ export default function Homepage({ navigation }) {
 
     // styling
 
+    // dont let user buy rewards with 0 points
+
     // when fetching task, check if id matches blacklisted task
-    // if id matches faves heart icon = glowing fuck yea
+    // if id matches faves heart icon = glowing
 
 // optimization shit
     // points update without button press
