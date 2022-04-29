@@ -279,7 +279,6 @@ export default function Homepage({ navigation }) {
 
           <View style={{backgroundColor: "#FDAF75", flex: 2, width: 415, padding: 20}}>
 
-            <Text>{points}</Text>
           <View style={{flexDirection: "row"}}>
           <Button
                TouchableComponent={TouchableScale}
@@ -297,7 +296,7 @@ export default function Homepage({ navigation }) {
               }}
               containerStyle={{
                 width: 150,
-                marginHorizontal: 20,
+                marginHorizontal: 30,
                 marginVertical: 10,
               }}
               icon={{

@@ -145,15 +145,16 @@ export default function Points (){
 
            <View style={{backgroundColor: "#FDAF75", flex: 2, width: 410}}>
                {cat.fact != ""?  
-               <Text>{cat.fact}</Text>: null }
+               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
+               >{cat.fact}</Text>: null }
 
                {joke.type == "single"?  
-               <Text>{joke.joke}</Text>: null }
+               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
+               >{joke.joke}</Text>: null }
 
                {joke.type == "twopart"?  
-               <Text>{joke.setup} {joke.delivery}</Text>: null }
-
-               <Text>{joke.type}</Text>
+               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
+               >{joke.setup} {joke.delivery}</Text>: null }
 
            </View>
            
