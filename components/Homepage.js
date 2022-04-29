@@ -196,8 +196,8 @@ export default function Homepage({ navigation }) {
       let i = 0; 
       if (dailies.length == 3) {
         
-      } else if (dailies.length < 1 && new Date().getDate() != currDate){
-        
+      } else if (dailies.length < 1 ){
+        //&& new Date().getDate() != currDate
         setCurrDate(new Date().getDate());
 
         while (i < 3) {
@@ -217,16 +217,21 @@ export default function Homepage({ navigation }) {
 
     let glowSettings = glow(1, 20, "grey", "red", false); 
 
+    let colors = ['#333C83', '#F24A72', '#EAEA7F'];
+    let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
+    let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
+
     return (
       <View style={styles.container}>
 
         <View style={{flex: 1}}> 
 
-        <Text>Parameters: </Text>
+        <Text style={{fontWeight: "bold", fontSize: 20, padding: 5, color: "#FDAF75", alignSelf: "center"}}>
+          Parameters </Text>
 
         <Picker
         selectedValue={type}
-        style={{ height: 50, width: 250, backgroundColor: "yellow", borderRadius: 10, borderWidth: 0}}
+        style={{ height: 50, width: 250, backgroundColor: "#F24A72", color: "#333C83", alignSelf: "center"}}
         onValueChange={(itemValue, itemIndex) => setType(itemValue)}>
 
         <Picker.Item label="recreational" value="recreational" />
@@ -243,7 +248,7 @@ export default function Homepage({ navigation }) {
 
         <Picker
         selectedValue={participants}
-        style={{ height: 50, width: 250, backgroundColor: "#F24A72", color: "white"}}
+        style={{ height: 50, width: 250, backgroundColor: "#FDAF75", color: "#333C83", alignSelf: "center"}}
         onValueChange={(itemValue, itemIndex) => setParticipants(itemValue)}>
 
         <Picker.Item label="1" value="1" />
@@ -256,10 +261,15 @@ export default function Homepage({ navigation }) {
         </Picker>
 
         <CheckBox
+            containerStyle={{backgroundColor: "#EAEA7F", width: 250}}
+            textStyle={{color: "#333C83"}}
             center
-            title="Free?"
-            checkedIcon="dot-circle-o"
-            uncheckedIcon="circle-o"
+            title="Free"
+            iconType="material"
+            checkedIcon="check"
+            checkedColor='green'
+            uncheckedIcon="clear"
+            uncheckedColor='red'
             checked={price}
             onPress={() => setPrice(!price)}
             />
@@ -357,15 +367,17 @@ export default function Homepage({ navigation }) {
 
           <FlatList 
         keyExtractor={item => item.key.toString()} 
-        renderItem={({item}) => 
+        renderItem={({item, index}) => 
         <View style={{width: 380}}>
-        <ListItem>
+        <ListItem
+        containerStyle={{backgroundColor: colors[index % colors.length]}}>
+          <Text style={{color: colorsTitles[index % colorsTitles.length], fontWeight: "bold", fontSize: 30}}>2x</Text>
           <ListItem.Content>
-            <ListItem.Title>{item.activity}</ListItem.Title>
-            <ListItem.Subtitle>{item.type}</ListItem.Subtitle>
-            <ListItem.Subtitle>{item.link}</ListItem.Subtitle>
+            <ListItem.Title style={{color: colorsTitles[index % colorsTitles.length], fontWeight: "bold"}}>{item.activity}</ListItem.Title>
+            <ListItem.Subtitle style={{color: colorsSubtitles[index % colorsSubtitles.length]}}>{item.type}</ListItem.Subtitle>
+            <ListItem.Subtitle style={{color: colorsSubtitles[index % colorsSubtitles.length]}} onPress={() => Linking.openURL(item.link)}>{item.link}</ListItem.Subtitle>
             </ListItem.Content>
-            <Icon type="material" color="green" name="done" onPress={() => addPointsDailies(item.key)} />
+            <Icon type="material" color="green" name="done" size={40} onPress={() => addPointsDailies(item.key)} />
           </ListItem>
         </View>} 
           data={dailies} 
