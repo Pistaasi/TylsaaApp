@@ -16,6 +16,7 @@ export default function Homepage({ navigation }) {
 // IMPORTANTÈ
 
     // styling
+    // change tab bar colors !!!
 
     // dont let user buy rewards with 0 points
 
@@ -27,7 +28,7 @@ export default function Homepage({ navigation }) {
     // global variable? 
     // react context? 
 
-// the "mayhaps" shit
+// the "mayhaps"
     // animation? 
     // text fade in would be cool with jokes etc with react-spring native
 
@@ -198,8 +199,8 @@ export default function Homepage({ navigation }) {
       let i = 0; 
       if (dailies.length == 3) {
         
-      } else if (dailies.length < 1 ){
-        //&& new Date().getDate() != currDate
+      } else if (dailies.length < 1 && new Date().getDate() != currDate){
+        
         setCurrDate(new Date().getDate());
 
         while (i < 3) {
