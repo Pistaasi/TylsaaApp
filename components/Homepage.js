@@ -16,14 +16,9 @@ export default function Homepage({ navigation }) {
 // IMPORTANTÈ
     // dailies counter
 
-    // styling
     // change tab bar colors !!!
 
     // dont let user buy rewards with 0 points
-
-    // when fetching task, check if id matches blacklisted task
-    // if id matches faves heart icon = glowing
-    // async?
 
 // optimization 
     // points update without button press
@@ -31,7 +26,6 @@ export default function Homepage({ navigation }) {
     // react context? 
 
 // the "mayhaps"
-    // animation? 
     // text fade in would be cool with jokes etc with react-spring native
 
     //parametrit
@@ -198,6 +192,7 @@ export default function Homepage({ navigation }) {
     async function getActivity() {
 
         updateBlacklist();
+        updateList();
 
         // set price parameter from checker boolean
           if (price === true) {
@@ -206,6 +201,7 @@ export default function Homepage({ navigation }) {
               setCash(""); 
           }
 
+          // fetch activity, redo fetch until a non banned activity comes up
           fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}&accessibility=${acc}`)  
           .then(response => response.json())  
           .then(data => {
@@ -261,6 +257,28 @@ export default function Homepage({ navigation }) {
     let colors = ['#333C83', '#F24A72', '#EAEA7F'];
     let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
     let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
+
+    function glowHeart() {
+     let i = 0; 
+     let checker = false; 
+     while (i < laskut.length) {
+      if (activity.activity == laskut[i].activity) {
+        checker = true; 
+        i++;
+        break; 
+      }
+       i++;
+     }
+
+     if (checker) {
+      return(
+      <AnimatedIcon name="heart" size={30} color="red" onPress= {saveFave} style={glowSettings}/>);
+     } else {
+      return(
+       <Ionicons name="heart" size={30} color="red" onPress= {saveFave}/>
+      );
+    }
+    }
 
     return (
       <View style={styles.container}>
@@ -394,7 +412,7 @@ export default function Homepage({ navigation }) {
 
             <View style={{flexDirection: "row"}}>
     
-            <AnimatedIcon name="heart" size={30} color="red" onPress= {saveFave} style={glowSettings}/>
+            {glowHeart()}
             <Text>                              </Text>
             <Ionicons name="refresh" size={30} color="green" onPress= {getActivity}/>
             <Text>                               </Text>
