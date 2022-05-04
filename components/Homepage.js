@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'; 
-import { StyleSheet, Text, View, Alert, Image, ScrollView, ImageBackground, Linking} from 'react-native';
+import { StyleSheet, Text, View, Alert, Image, ScrollView, ImageBackground, Linking, AppState} from 'react-native';
 import { Card, ListItem, Icon, CheckBox, Button} from 'react-native-elements'
 import { Ionicons} from '@expo/vector-icons';  
 import { Picker, selectedValue } from '@react-native-picker/picker';
@@ -14,6 +14,7 @@ const AnimatedIcon = animated(Ionicons);
 
 export default function Homepage({ navigation }) {
 // IMPORTANTÈ
+    // dailies counter
 
     // styling
     // change tab bar colors !!!
@@ -72,11 +73,19 @@ export default function Homepage({ navigation }) {
       useEffect(() => {
         getDailies(); 
 
-        // Points needs id=1 points to keep count 
-        // If id=1 exists, this sql adds nothing
-        db.transaction(tx => {
-         tx.executeSql("INSERT IGNORE INTO points (id, userPoints) VALUES (1, 10);");
+        // sets points if they don't exist in the db
+        try {
+          db.transaction(tx => {
+            tx.executeSql('select * from points;', [], (_, { rows }) =>
+                setPoints(rows._array[0].userPoints)
+                );   
+            }, console.log(points), null);
+        } catch (error) {
+          db.transaction(tx => {
+         tx.executeSql("INSERT INTO points (userPoints) VALUES (10);");
           }, null, updateList);
+        }
+        
         console.log(dailies);
       }, [])
 
@@ -199,7 +208,8 @@ export default function Homepage({ navigation }) {
       let i = 0; 
       if (dailies.length == 3) {
         
-      } else if (dailies.length < 1 && new Date().getDate() != currDate){
+      } else if (dailies.length < 1){
+        //new Date().getDate() != currDate
         
         setCurrDate(new Date().getDate());
 
@@ -218,7 +228,8 @@ export default function Homepage({ navigation }) {
       }
       }
 
-    let glowSettings = glow(1, 20, "grey", "red", false); 
+    let glowSettings = glow(1, 20, "grey", "green", true); 
+   
 
     let colors = ['#333C83', '#F24A72', '#EAEA7F'];
     let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
