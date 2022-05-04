@@ -23,8 +23,9 @@ export default function Homepage({ navigation }) {
 
     // when fetching task, check if id matches blacklisted task
     // if id matches faves heart icon = glowing
+    // async?
 
-// optimization shit
+// optimization 
     // points update without button press
     // global variable? 
     // react context? 
@@ -72,6 +73,7 @@ export default function Homepage({ navigation }) {
       // dailies
       useEffect(() => {
         getDailies(); 
+        updateBlacklist();
 
         // sets points if they don't exist in the db
         try {
@@ -89,7 +91,12 @@ export default function Homepage({ navigation }) {
         console.log(dailies);
       }, [])
 
+
+
     // FAVORITES
+
+
+
 
     // update list (faves list)
     const updateList = () => {
@@ -118,7 +125,13 @@ export default function Homepage({ navigation }) {
           console.log(laskut);
     }
 
+
+
+
     // POINTS
+
+
+
 
     // add points
     const addPoints = () => {
@@ -155,7 +168,13 @@ export default function Homepage({ navigation }) {
       }
 
 
+
+
+
     // BLACKLISTING
+
+
+
 
     const saveBlacklist = () => {
       db.transaction(tx => {
@@ -174,8 +193,11 @@ export default function Homepage({ navigation }) {
 
 
 
+
     // get activity
-    const getActivity = () => {
+    async function getActivity() {
+
+        updateBlacklist();
 
         // set price parameter from checker boolean
           if (price === true) {
@@ -186,20 +208,24 @@ export default function Homepage({ navigation }) {
 
           fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}&accessibility=${acc}`)  
           .then(response => response.json())  
-          .then(data => setActivity(data)) 
-          .catch(error => {         
-              Alert.alert('Error', error);   
-            });
-            console.log(activity);
-            //oh well
-            let i = 0;
-            while (i < banned) {
-              if (activity.key == banned[i].bannedId) {
-                getActivity();
-                break; 
-              }
+          .then(data => {
+            let i = 0
+            while (i < banned.length) {
+          
+            if (data.key == banned[i].bannedId) {
+              console.log("banned id !!!")
               i++;
+              getActivity();
+              break; 
+            } else {
+              setActivity(data)
             }
+            
+            i++;
+          }}) 
+          .catch(error => {         
+              Alert.alert('Error', error.message);   
+            });
         }
 
     // get dailies
@@ -228,7 +254,8 @@ export default function Homepage({ navigation }) {
       }
       }
 
-    let glowSettings = glow(1, 20, "grey", "green", true); 
+    // glow effect for favorites
+    let glowSettings = glow(1, 10, "red", "#ff599e", true); 
    
 
     let colors = ['#333C83', '#F24A72', '#EAEA7F'];
@@ -366,11 +393,12 @@ export default function Homepage({ navigation }) {
             <View style={{paddingTop: 20}}>
 
             <View style={{flexDirection: "row"}}>
-            <Ionicons name="heart" size={30} color="red" onPress= {saveFave}/>
+    
+            <AnimatedIcon name="heart" size={30} color="red" onPress= {saveFave} style={glowSettings}/>
             <Text>                              </Text>
             <Ionicons name="refresh" size={30} color="green" onPress= {getActivity}/>
             <Text>                               </Text>
-            <AnimatedIcon name="trash" size={30} color="grey" onPress= {saveBlacklist}/>
+            <Ionicons name="trash" size={30} color="grey" onPress= {saveBlacklist}/>
             </View>
 
             </View>
