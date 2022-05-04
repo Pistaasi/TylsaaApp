@@ -30,7 +30,6 @@ export default function Homepage({ navigation }) {
 
     //parametrit
     const [dailies, setDailies] = useState([]);
-    const [currDate, setCurrDate] = useState(new Date().getDate());
     const [type, setType] = useState('');
     const [participants, setParticipants] = useState('');
     const [price, setPrice] = useState(false);
@@ -69,6 +68,21 @@ export default function Homepage({ navigation }) {
         getDailies(); 
         updateBlacklist();
 
+        let currTime = new Date();
+
+        let timeHour = currTime.getHours()
+        let timeMinute = currTime.getMinutes();
+        let timeHourLeft = (23 - timeHour) * 60; 
+        let timeMinLeft = 60 - timeMinute; 
+        let secondsLeft = ((timeHourLeft + timeMinLeft) * 60) * 1000; 
+
+          const interval = setInterval(() => {
+            console.log("the day has changed!")
+            getDailies();
+          }, secondsLeft);
+
+        // 86 400 seconds in a day
+
         // sets points if they don't exist in the db
         try {
           db.transaction(tx => {
@@ -83,6 +97,7 @@ export default function Homepage({ navigation }) {
         }
         
         console.log(dailies);
+        return () => clearInterval(interval);
       }, [])
 
 
@@ -231,9 +246,6 @@ export default function Homepage({ navigation }) {
       if (dailies.length == 3) {
         
       } else if (dailies.length < 1){
-        //new Date().getDate() != currDate
-        
-        setCurrDate(new Date().getDate());
 
         while (i < 3) {
             fetch(`https://www.boredapi.com/api/activity`)  
@@ -264,7 +276,6 @@ export default function Homepage({ navigation }) {
      while (i < laskut.length) {
       if (activity.activity == laskut[i].activity) {
         checker = true; 
-        i++;
         break; 
       }
        i++;
