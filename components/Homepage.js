@@ -13,12 +13,6 @@ import glow from "@pistaasi/react-native-glow";
 const AnimatedIcon = animated(Ionicons); 
 
 export default function Homepage({ navigation }) {
-// IMPORTANTÈ
-
-    // change tab bar colors !!!
-
-    // dont let user buy rewards with 0 points
-
 // optimization 
     // points update without button press
     // global variable? 

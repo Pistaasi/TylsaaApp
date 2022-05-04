@@ -20,7 +20,7 @@ export default function Points (){
 
     // - points
     const minusPoints = () => {
-      db.transaction(tx => {
+         db.transaction(tx => {
             tx.executeSql('UPDATE points SET userPoints = userPoints - 10 WHERE id = (1)',  
             );    
         }, null, updatePoints)
@@ -44,21 +44,32 @@ export default function Points (){
         });
 
     const getCatFact = () => {
-        fetch(`https://catfact.ninja/fact`)  
-        .then(response => response.json())  
-        .then(data => setCat(data))  
-        .catch(error => {         
-            Alert.alert('Error', error);   
-          });
-          console.log(cat);
-          minusPoints();
-          updatePoints();
-          setJoke({
-            "type": ""
-            });
+      updatePoints()
+      if (points == 0) {
+        Alert.alert("Need 10 points!")
+      } else if (points > 9) {
+      fetch(`https://catfact.ninja/fact`)  
+              .then(response => response.json())  
+              .then(data => setCat(data))  
+              .catch(error => {         
+                  Alert.alert('Error', error);   
+                });
+                console.log(cat);
+                minusPoints();
+                updatePoints();
+                setJoke({
+                  "type": ""
+                  });
+      }
+        
       }
 
       const getJoke = () => {
+        updatePoints()
+
+      if (points == 0) {
+        Alert.alert("Need 10 points!")
+      } else if (points > 9) {
         fetch(`https://v2.jokeapi.dev/joke/any?safe-mode`)  
         .then(response => response.json())  
         .then(data => setJoke(data))  
@@ -71,6 +82,7 @@ export default function Points (){
           setCat({
             "fact": ""
             });
+          }
       }
 
     return (
