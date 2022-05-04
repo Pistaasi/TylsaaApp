@@ -15,13 +15,19 @@ export default function TabsNav(){
                 
             let iconName;            
             if (route.name === 'Home') {             
-                iconName = 'md-home';            
+                iconName = 'happy-outline';            
             } else if (route.name === 'Points') {
-                iconName = 'md-map';            
+                iconName = 'gift-outline';            
             }
             return <Ionicons name={iconName}size={size}color={color} />;   
                 
         },
+
+        tabBarStyle: {
+            backgroundColor: "#333C83"
+        },
+        tabBarActiveTintColor: "#F24A72", 
+        tabBarInactiveTintColor: "#EAEA7F",
         headerShown: false         
         })}>
             <Tab.Screen name="Home" component={Homepage} />

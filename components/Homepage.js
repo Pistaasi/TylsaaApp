@@ -14,7 +14,6 @@ const AnimatedIcon = animated(Ionicons);
 
 export default function Homepage({ navigation }) {
 // IMPORTANTÈ
-    // dailies counter
 
     // change tab bar colors !!!
 
