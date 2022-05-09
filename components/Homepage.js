@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react'; 
-import { StyleSheet, Text, View, Alert, Image, ScrollView, ImageBackground, Linking, AppState} from 'react-native';
+import React, { useState, useEffect, TypeError} from 'react'; 
+import { StyleSheet, Text, View, Alert, Linking, AppState} from 'react-native';
 import { Card, ListItem, Icon, CheckBox, Button} from 'react-native-elements'
 import { Ionicons} from '@expo/vector-icons';  
-import { Picker, selectedValue } from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import * as SQLite from'expo-sqlite';
 import { FlatList } from 'react-native';
 import TouchableScale from 'react-native-touchable-scale';
@@ -13,13 +13,9 @@ import glow from "@pistaasi/react-native-glow";
 const AnimatedIcon = animated(Ionicons); 
 
 export default function Homepage({ navigation }) {
-// optimization 
-    // points update without button press
-    // global variable? 
-    // react context? 
-
-// the "mayhaps"
-    // text fade in would be cool with jokes etc with react-spring native
+// TO DO: 
+    // cleaning
+    // style favorites
 
     //parametrit
     const [dailies, setDailies] = useState([]);
@@ -30,7 +26,11 @@ export default function Homepage({ navigation }) {
     const [acc, setAcc] = useState('');
     const [laskut, setLaskut] = useState([]); 
     const [points, setPoints] =useState(0); 
-    const [banned, setBanned] = useState([]);
+    const [banned, setBanned] = useState([
+      {
+        "bannedId": "",
+        "id": 1
+      }]);
     const [activity, setActivity] = useState({
         "activity": "Find a new activity!",
         "type": "",
@@ -77,17 +77,18 @@ export default function Homepage({ navigation }) {
         // 86 400 seconds in a day
 
         // sets points if they don't exist in the db
-        try {
+       
           db.transaction(tx => {
             tx.executeSql('select * from points;', [], (_, { rows }) =>
-                setPoints(rows._array[0].userPoints)
+                {try {
+                  setPoints(rows._array[0].userPoints)
+                } catch (error) {
+                  db.transaction(tx => {
+                 tx.executeSql("INSERT INTO points (userPoints) VALUES (10);");
+                  }, null, updateList);
+                }}
                 );   
             }, console.log(points), null);
-        } catch (error) {
-          db.transaction(tx => {
-         tx.executeSql("INSERT INTO points (userPoints) VALUES (10);");
-          }, null, updateList);
-        }
         
         console.log(dailies);
         return () => clearInterval(interval);
@@ -210,7 +211,7 @@ export default function Homepage({ navigation }) {
           }
 
           // fetch activity, redo fetch until a non banned activity comes up
-          fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}&accessibility=${acc}`)  
+          fetch(`https://www.boredapi.com/api/activity/?type=${type}&participants=${participants}&price=${cash}`)  
           .then(response => response.json())  
           .then(data => {
             let i = 0
@@ -229,6 +230,7 @@ export default function Homepage({ navigation }) {
           }}) 
           .catch(error => {         
               Alert.alert('Error', error.message);   
+              console.log("error!")
             });
         }
 
@@ -361,6 +363,7 @@ export default function Homepage({ navigation }) {
                 width: 150,
                 marginHorizontal: 30,
                 marginVertical: 10,
+                alignSelf: "center"
               }}
               icon={{
                 name: 'heart',
@@ -391,6 +394,7 @@ export default function Homepage({ navigation }) {
                 width: 110,
                 marginHorizontal: 20,
                 marginVertical: 10,
+                alignSelf: "center"
               }}
               iconRight
               iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}

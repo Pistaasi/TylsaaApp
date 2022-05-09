@@ -1,21 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'; 
-import { StyleSheet, Text, View, Alert, TextInput, Image, ScrollView, ImageBackground, Linking} from 'react-native';
-import { Card, ListItem, Icon, Avatar, Button, Header} from 'react-native-elements'
-import { Ionicons} from '@expo/vector-icons';  
-import { Picker, selectedValue } from '@react-native-picker/picker';
+import { StyleSheet, Text, View, Alert } from 'react-native';
+import {  Button } from 'react-native-elements'
 import * as SQLite from'expo-sqlite';
 import TouchableScale from 'react-native-touchable-scale';
-import {LinearGradient} from 'expo-linear-gradient';
+import { animated, useSpring, easings, config} from 'react-spring';
+
+const AnimatedText = animated(Text);
 
 export default function Points (){
 
     const db = SQLite.openDatabase('Address.db');
 
     const [points, setPoints] = useState(0); 
+    const [flip, set] = useState(false);
 
     useEffect(() => {
-       updatePoints();
+       const interval = setInterval(() => {
+        console.log("points updated!")
+        updatePoints();
+      }, 5000);
+
       }, [])
 
     // - points
@@ -84,6 +89,15 @@ export default function Points (){
             });
           }
       }
+      
+      const props = useSpring({
+        from: { opacity: 0, fontSize: 10, color: "#FDAF75" },
+        to: { opacity: 1, fontSize: 27, color: "#F24A72"},
+        reset: true,
+        delay: 400,
+        reverse: flip,
+        config: config.molasses
+      })
 
     return (
         <View style={styles.container}>
@@ -157,16 +171,20 @@ export default function Points (){
 
            <View style={{backgroundColor: "#FDAF75", flex: 2, width: 410}}>
                {cat.fact != ""?  
-               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
-               >{cat.fact}</Text>: null }
+               <AnimatedText style={{...props, fontWeight: "bold", padding: 20, alignSelf: "center", textAlign: "center", paddingTop: 10}}
+               >{cat.fact}</AnimatedText>: null }
 
                {joke.type == "single"?  
-               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
-               >{joke.joke}</Text>: null }
+               <AnimatedText style={{...props, fontWeight: "bold", padding: 20, alignSelf: "center", textAlign: "center", paddingTop: 10}}
+               >{joke.joke}</AnimatedText>: null }
 
                {joke.type == "twopart"?  
-               <Text style={{fontWeight: "bold", fontSize: 27, padding: 20, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 100}}
-               >{joke.setup} {joke.delivery}</Text>: null }
+               <View>
+               <Text style={{fontWeight: "bold", padding: 20, fontSize: 27, color: "#F24A72", alignSelf: "center", textAlign: "center", paddingTop: 10}}
+               >{joke.setup}</Text>
+               <AnimatedText style={{...props, fontWeight: "bold", padding: 20, alignSelf: "center", textAlign: "center", paddingTop: 10}}>{joke.delivery}
+               </AnimatedText>
+               </View>: null }
 
            </View>
            
