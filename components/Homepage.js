@@ -14,8 +14,8 @@ const AnimatedIcon = animated(Ionicons);
 
 export default function Homepage({ navigation }) {
   // TO DO: 
+
   // cleaning
-  // style favorites
   // readme
 
   //parametrit
@@ -299,7 +299,7 @@ export default function Homepage({ navigation }) {
       <View style={{ flex: 1 }}>
 
         <Text style={{ fontWeight: "bold", fontSize: 20, padding: 5, color: "#FDAF75", alignSelf: "center" }}>
-          Parameters </Text>
+          Set type and participants </Text>
 
         <Picker
           selectedValue={type}
@@ -320,7 +320,7 @@ export default function Homepage({ navigation }) {
 
         <Picker
           selectedValue={participants}
-          style={{ height: 50, width: 250, backgroundColor: "#FDAF75", color: "#333C83", alignSelf: "center" }}
+          style={{ width: 250, backgroundColor: "#FDAF75", color: "#333C83", alignSelf: "center" }}
           onValueChange={(itemValue, itemIndex) => setParticipants(itemValue)}>
 
           <Picker.Item label="1" value="1" />
@@ -333,8 +333,8 @@ export default function Homepage({ navigation }) {
         </Picker>
 
         <CheckBox
-          containerStyle={{ backgroundColor: "#EAEA7F", width: 250 }}
-          textStyle={{ color: "#333C83" }}
+          containerStyle={{ backgroundColor: "#333C83", borderColor: "#333C83", width: 250 }}
+          textStyle={{ color: "#EAEA7F" }}
           center
           title="Free"
           iconType="material"
@@ -417,7 +417,9 @@ export default function Homepage({ navigation }) {
 
           <Text style={{ color: "#EAEA7F" }}>Type: {activity.type}</Text>
           <Text style={{ color: "#EAEA7F" }}>Participants: {activity.participants}</Text>
-          <Text style={{ color: "#EAEA7F" }}>Price: {activity.price}</Text>
+          {activity.price  > 0? 
+              <Text style={{ color: "#EAEA7F" }}>Paid</Text>
+            : <Text style={{ color: "#EAEA7F" }}>Free</Text> }
           <Text style={{ color: "#FDAF75" }}
             onPress={() => Linking.openURL(activity.link)}>{activity.link}</Text>
 

@@ -54,8 +54,9 @@ export default function Favorites() {
                   {item.type}</ListItem.Subtitle>
                 <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length]}}>
                   Participants: {item.participants}</ListItem.Subtitle>
-                <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>
-                  Price: {item.price} </ListItem.Subtitle>
+                  {item.price  > 0? 
+              <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>Paid</ListItem.Subtitle>
+            : <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>Free</ListItem.Subtitle> }
                 <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>
                   {item.link}</ListItem.Subtitle>
               </ListItem.Content>
