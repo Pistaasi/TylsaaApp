@@ -25,7 +25,7 @@ export default function Homepage({ navigation }) {
   const [price, setPrice] = useState(false);
   const [cash, setCash] = useState("");
   const [acc, setAcc] = useState('');
-  const [laskut, setLaskut] = useState([]);
+  const [faves, setFaves] = useState([]);
   const [points, setPoints] = useState(0);
   const [banned, setBanned] = useState([
     {
@@ -107,7 +107,7 @@ export default function Homepage({ navigation }) {
   const updateList = () => {
     db.transaction(tx => {
       tx.executeSql('select * from faves;', [], (_, { rows }) =>
-        setLaskut(rows._array)
+        setFaves(rows._array)
       );
     }, null, null);
   }
@@ -127,7 +127,7 @@ export default function Homepage({ navigation }) {
       tx.executeSql('insert into faves (activity, type, participants, price, link) values (?, ?, ?, ?, ?);',
         [activity.activity, activity.type, activity.participants, activity.price, activity.link]);
     }, null, updateList)
-    console.log(laskut);
+    console.log(faves);
   }
 
 
@@ -275,8 +275,8 @@ export default function Homepage({ navigation }) {
   function glowHeart() {
     let i = 0;
     let checker = false;
-    while (i < laskut.length) {
-      if (activity.activity == laskut[i].activity) {
+    while (i < faves.length) {
+      if (activity.activity == faves[i].activity) {
         checker = true;
         break;
       }

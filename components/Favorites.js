@@ -2,25 +2,26 @@ import { Text, View, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import * as SQLite from 'expo-sqlite';
 import { ListItem, Icon } from 'react-native-elements';
-//import {useSpring, to, animated} from "react-spring"
+import { Ionicons } from '@expo/vector-icons';
 
-export default function Favorites(route, navigation) {
+export default function Favorites() {
 
   const db = SQLite.openDatabase('Address.db');
 
-  const [laskut, setLaskut] = useState([]);
+  const [faves, setFaves] = useState([]);
 
   useEffect(() => {
-    getList();
+    getFaves();
   }, [])
 
-  const getList = () => {
+  // get favorites 
+  const getFaves = () => {
     db.transaction(tx => {
       tx.executeSql('select * from faves;', [], (_, { rows }) =>
-        setLaskut(rows._array)
+        setFaves(rows._array)
       );
     }, null, null);
-    console.log(laskut);
+    console.log(faves);
   }
 
   // Unfavorite
@@ -28,30 +29,40 @@ export default function Favorites(route, navigation) {
     db.transaction(
       tx => {
         tx.executeSql(`delete from faves where id = ?;`, [id]);
-      }, null, getList
+      }, null, getFaves
     )
   }
 
+  // changing colors for FlatList
+  let colors = ['#333C83', '#F24A72', '#EAEA7F'];
+  let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
+  let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
+
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ padding: 20, backgroundColor: "#FDAF75", flex: 1 }}>
 
       <FlatList
         keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) =>
-          <View style={{ width: 400 }}>
-            <ListItem>
+        renderItem={({ item, index}) =>
+          <View style={{ width: "100%"}}>
+            <ListItem 
+            containerStyle={{ backgroundColor: colors[index % colors.length] }}>
               <ListItem.Content>
-                <ListItem.Title>{item.id}</ListItem.Title>
-                <ListItem.Subtitle>{item.activity}</ListItem.Subtitle>
-                <ListItem.Subtitle>{item.type}</ListItem.Subtitle>
-                <ListItem.Subtitle>{item.participants}</ListItem.Subtitle>
-                <ListItem.Subtitle>{item.price}</ListItem.Subtitle>
-                <ListItem.Subtitle>{item.link}</ListItem.Subtitle>
+                <ListItem.Title style={{ color: colorsTitles[index % colorsTitles.length], fontWeight: "bold", fontSize: 22}}>
+                  {item.activity}</ListItem.Title>
+                <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length], fontSize: 15}}>
+                  {item.type}</ListItem.Subtitle>
+                <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length]}}>
+                  Participants: {item.participants}</ListItem.Subtitle>
+                <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>
+                  Price: {item.price} </ListItem.Subtitle>
+                <ListItem.Subtitle style={{ color: colorsSubtitles[index % colorsSubtitles.length] }}>
+                  {item.link}</ListItem.Subtitle>
               </ListItem.Content>
-              <Icon type="material" reverse color="red" name="delete" onPress={() => deleteFave(item.id)} />
+              <Ionicons name="trash" size={40} color={colorsTitles[index % colorsTitles.length]} onPress={() => deleteFave(item.id)} />
             </ListItem>
           </View>}
-        data={laskut}
+        data={faves}
       />
     </View>
   );
