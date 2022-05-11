@@ -1,8 +1,13 @@
-import { Text, View, FlatList } from "react-native";
+import { Text, View, FlatList, StyleSheet} from "react-native";
 import { useEffect, useState } from "react";
 import * as SQLite from 'expo-sqlite';
 import { ListItem, Icon } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+
+// changing colors for FlatList
+let colors = ['#333C83', '#F24A72', '#EAEA7F'];
+let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
+let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
 
 export default function Favorites() {
 
@@ -33,18 +38,13 @@ export default function Favorites() {
     )
   }
 
-  // changing colors for FlatList
-  let colors = ['#333C83', '#F24A72', '#EAEA7F'];
-  let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
-  let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
-
   return (
-    <View style={{ padding: 20, backgroundColor: "#FDAF75", flex: 1 }}>
+    <View style={ styles.background }>
 
       <FlatList
         keyExtractor={item => item.id.toString()}
         renderItem={({ item, index}) =>
-          <View style={{ width: "100%"}}>
+          <View>
             <ListItem 
             containerStyle={{ backgroundColor: colors[index % colors.length] }}>
               <ListItem.Content>
@@ -69,3 +69,18 @@ export default function Favorites() {
   );
 
 }
+
+
+
+// STYLES 
+
+
+
+const styles = StyleSheet.create({
+  background: {
+    padding: 20, 
+    backgroundColor: "#FDAF75", 
+    flex: 1, 
+    width: "100%"
+  }
+});

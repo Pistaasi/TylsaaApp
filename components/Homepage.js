@@ -12,6 +12,11 @@ import glow from "@pistaasi/react-native-glow";
 
 const AnimatedIcon = animated(Ionicons);
 
+// colors for dailies styling
+let colors = ['#333C83', '#F24A72', '#EAEA7F'];
+let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
+let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
+
 export default function Homepage({ navigation }) {
   // TO DO: 
 
@@ -90,7 +95,7 @@ export default function Homepage({ navigation }) {
         }
       }
       );
-    }, console.log(points), null);
+    }, null, null);
 
     console.log(dailies);
     return () => clearInterval(interval);
@@ -169,7 +174,7 @@ export default function Homepage({ navigation }) {
       tx.executeSql('select * from points;', [], (_, { rows }) =>
         setPoints(rows._array[0].userPoints)
       );
-    }, console.log(points), null);
+    }, null, null);
   }
 
 
@@ -267,11 +272,6 @@ export default function Homepage({ navigation }) {
   let glowSettings = glow(1, 10, "red", "#ff599e", true);
 
 
-  // colors for dailies styling
-  let colors = ['#333C83', '#F24A72', '#EAEA7F'];
-  let colorsTitles = ['#F24A72', '#333C83', '#F24A72'];
-  let colorsSubtitles = ['#EAEA7F', '#EAEA7F', '#333C83'];
-
   function glowHeart() {
     let i = 0;
     let checker = false;
@@ -298,12 +298,12 @@ export default function Homepage({ navigation }) {
 
       <View style={{ flex: 1 }}>
 
-        <Text style={{ fontWeight: "bold", fontSize: 20, padding: 5, color: "#FDAF75", alignSelf: "center" }}>
+        <Text style={ styles.titleText }>
           Set type and participants </Text>
 
         <Picker
           selectedValue={type}
-          style={{ height: 50, width: 250, backgroundColor: "#F24A72", color: "#333C83", alignSelf: "center" }}
+          style={{ ...styles.pickerStyle, backgroundColor: "#F24A72" }}
           onValueChange={(itemValue, itemIndex) => setType(itemValue)}>
 
           <Picker.Item label="recreational" value="recreational" />
@@ -320,7 +320,7 @@ export default function Homepage({ navigation }) {
 
         <Picker
           selectedValue={participants}
-          style={{ width: 250, backgroundColor: "#FDAF75", color: "#333C83", alignSelf: "center" }}
+          style={{ ...styles.pickerStyle, backgroundColor: "#FDAF75" }}
           onValueChange={(itemValue, itemIndex) => setParticipants(itemValue)}>
 
           <Picker.Item label="1" value="1" />
@@ -333,8 +333,8 @@ export default function Homepage({ navigation }) {
         </Picker>
 
         <CheckBox
-          containerStyle={{ backgroundColor: "#333C83", borderColor: "#333C83", width: 250 }}
-          textStyle={{ color: "#EAEA7F" }}
+          containerStyle={ styles.checkboxStyle }
+          textStyle={ styles.cardText }
           center
           title="Free"
           iconType="material"
@@ -349,7 +349,7 @@ export default function Homepage({ navigation }) {
       </View>
 
 
-      <View style={{ backgroundColor: "#FDAF75", flex: 2, width: 415, padding: 20 }}>
+      <View style={ styles.lowerCont }>
 
         <View style={{ flexDirection: "row" }}>
           <Button
@@ -358,20 +358,9 @@ export default function Homepage({ navigation }) {
             tension={100}
             activeScale={0.95}
             title="FAVORITES"
-            titleStyle={{ fontWeight: 'bold', fontSize: 14 }}
-            buttonStyle={{
-              borderWidth: 0,
-              borderColor: 'transparent',
-              borderRadius: 20,
-              backgroundColor: "rgba(242, 74, 114, 1)"
-
-            }}
-            containerStyle={{
-              width: 150,
-              marginHorizontal: 30,
-              marginVertical: 10,
-              alignSelf: "center"
-            }}
+            titleStyle={ styles.buttonTitle }
+            buttonStyle={ styles.buttonStyle }
+            containerStyle={ styles.buttonContainer }
             icon={{
               name: 'heart',
               type: 'font-awesome',
@@ -379,7 +368,7 @@ export default function Homepage({ navigation }) {
               color: 'white',
             }}
             iconRight
-            iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
+            iconContainerStyle={ styles.iconContainer }
             onPress={() => navigation.navigate('Favorites')}
           />
 
@@ -389,38 +378,27 @@ export default function Homepage({ navigation }) {
             tension={100}
             activeScale={0.95}
             title="DONE   🎉"
-            titleStyle={{ fontWeight: 'bold', fontSize: 14 }}
-            buttonStyle={{
-              borderWidth: 0,
-              borderColor: 'transparent',
-              borderRadius: 20,
-              backgroundColor: "rgba(242, 74, 114, 1)"
-
-            }}
-            containerStyle={{
-              width: 110,
-              marginHorizontal: 20,
-              marginVertical: 10,
-              alignSelf: "center"
-            }}
+            titleStyle={ styles.buttonTitle }
+            buttonStyle={ styles.buttonStyle }
+            containerStyle={ styles.buttonContainer }
             iconRight
-            iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
+            iconContainerStyle={ styles.iconContainer }
             onPress={addPoints}
           />
 
         </View>
 
-        <Card containerStyle={{ width: 350, backgroundColor: "#333C83" }}
+        <Card containerStyle={ styles.cardContainer }
           wrapperStyle={{ backgroundColor: "#333C83" }}>
-          <Card.Title style={{ color: "#F24A72" }}>{activity.activity}</Card.Title>
+          <Card.Title style={ styles.cardTitle }>{activity.activity}</Card.Title>
           <Card.Divider />
 
-          <Text style={{ color: "#EAEA7F" }}>Type: {activity.type}</Text>
-          <Text style={{ color: "#EAEA7F" }}>Participants: {activity.participants}</Text>
+          <Text style={ styles.cardText }>Type: {activity.type}</Text>
+          <Text style={ styles.cardText }>Participants: {activity.participants}</Text>
           {activity.price  > 0? 
-              <Text style={{ color: "#EAEA7F" }}>Paid</Text>
-            : <Text style={{ color: "#EAEA7F" }}>Free</Text> }
-          <Text style={{ color: "#FDAF75" }}
+              <Text style={ styles.cardText }>Paid</Text>
+            : <Text style={ styles.cardText }>Free</Text> }
+          <Text style={ styles.link }
             onPress={() => Linking.openURL(activity.link)}>{activity.link}</Text>
 
 
@@ -465,12 +443,75 @@ export default function Homepage({ navigation }) {
   );
 }
 
+
+
+// STYLES
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#333C83'
-  },
+  }, 
+  cardText: {
+    color: "#EAEA7F"
+  }, 
+  cardTitle: {
+    color: "#F24A72"
+  }, 
+  cardContainer: {
+    width: "95%", 
+    backgroundColor: "#333C83", 
+    alignSelf: "center"
+  }, 
+  link: {
+    color: "#FDAF75"
+  }, 
+  buttonContainer: {
+    width: 140,
+    marginHorizontal: 23,
+    marginVertical: 10,
+    alignSelf: "center"
+  }, 
+  buttonStyle: {
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: 20,
+    backgroundColor: "rgba(242, 74, 114, 1)"
+  }, 
+  iconContainer: {
+    marginLeft: 10, 
+    marginRight: -10
+  }, 
+  buttonTitle: {
+    fontWeight: 'bold', 
+    fontSize: 14
+  }, 
+  lowerCont: {
+    backgroundColor: "#FDAF75", 
+    flex: 2, 
+    width: "100%", 
+    padding: 20
+  }, 
+  checkboxStyle: {
+    backgroundColor: "#333C83", 
+    borderColor: "#333C83", 
+    width: "50%", 
+    alignSelf: "center"
+  }, 
+  pickerStyle: {
+    width: 250, 
+    color: "#333C83", 
+    alignSelf: "center"
+  }, 
+  titleText: {
+    fontWeight: "bold", 
+    fontSize: 20, 
+    padding: 5, 
+    color: "#FDAF75", 
+    alignSelf: "center"
+  }
 });
