@@ -7,6 +7,8 @@ There's no need to login to look up activities to do, or for getting points for 
 
 # Homepage 
 
+<img src="https://github.com/Pistaasi/TylsaaApp/blob/main/Images/Homepage.jpg" alt="Homepage" width="250"/>
+
 The user can look up activities from https://www.boredapi.com/api/activity to do. 
 If the user likes an activity, the heart icon gets a glow animation made with @pistaasi/react-native-glow, which is an npm package made by me. The glow animation is made using react-spring for react native. Liked activities are saved to an SQlite database. 
 If the user dislikes a suggested activity, they can press the trashcan icon to blacklist it and save it to the database. If a banned activity comes up, activities are auto refreshed until a non banned activity shows up. 
@@ -19,6 +21,8 @@ At the top of the page are the parameters, which use react-native-picker and Che
 
 # Points 
 
+<img src="https://github.com/Pistaasi/TylsaaApp/blob/main/Images/Points.jpg" alt="Homepage" width="250"/>
+
 Points page let's the user use their earned points from doing activities. 
 There are two rewards, jokes and cat facts, fetched from their API's, https://catfact.ninja/fact and https://v2.jokeapi.dev/joke/any?safe-mode
 
@@ -26,5 +30,7 @@ Points are refreshed every 5 seconds with a set interval, which fetches points f
 The rewards text uses a react-spring animation, which gives a fade in pop up kind of effect by changing text size and opacity. 
 
 # Favorites 
+
+<img src="https://github.com/Pistaasi/TylsaaApp/blob/main/Images/Favorites.jpg" alt="Homepage" width="250"/>
 
 Favorites display favorited activities in the database. Activities in the list can be deleted by pressing the trashcan icon. 
