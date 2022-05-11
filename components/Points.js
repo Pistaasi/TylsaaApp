@@ -13,7 +13,12 @@ export default function Points() {
   const db = SQLite.openDatabase('Address.db');
 
   const [points, setPoints] = useState(0);
-  const [flip, set] = useState(false);
+  const [cat, setCat] = useState({
+    "fact": ""
+  });
+  const [joke, setJoke] = useState({
+    "type": ""
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,12 +44,10 @@ export default function Points() {
     }, null, null);
   }
 
-  const [cat, setCat] = useState({
-    "fact": ""
-  });
-  const [joke, setJoke] = useState({
-    "type": ""
-  });
+
+  // GET REWARDS 
+
+  
 
   const getCatFact = () => {
     updatePoints()
@@ -93,7 +96,7 @@ export default function Points() {
     to: { opacity: 1, fontSize: 27, color: "#F24A72" },
     reset: true,
     delay: 400,
-    reverse: flip,
+    reverse: false,
     config: config.molasses
   })
 

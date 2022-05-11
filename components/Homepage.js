@@ -29,8 +29,8 @@ export default function Homepage({ navigation }) {
   const [participants, setParticipants] = useState('');
   const [price, setPrice] = useState(false);
   const [cash, setCash] = useState("");
-  const [acc, setAcc] = useState('');
   const [faves, setFaves] = useState([]);
+  // needed for initializing points
   const [points, setPoints] = useState(0);
   const [banned, setBanned] = useState([
     {
